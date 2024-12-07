@@ -14,6 +14,7 @@ def main():
     parser.add_argument('--api_key', type=str, default=None)
     args = parser.parse_args()
 
+    # load configs
     configs = load_config(args, config_path="./configs/configs.yaml", api_key_path="./configs/api_key.yaml")
     if configs is None:
         exit()
