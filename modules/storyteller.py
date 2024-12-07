@@ -23,7 +23,7 @@ class Storyteller():
 
         # set client according to api type
         if self.api_type == 'openai':
-            self.client = OpenAI(api_key=configs["api_key"]['OPENAI_KEY'])
+            self.client = OpenAI(api_key=configs["api_key"]['API_KEY'])
         else:
             raise ValueError(f"Wrong API type. API Type: {self.api_type}")
         

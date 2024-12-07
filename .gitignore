@@ -11,7 +11,7 @@ _ext
 *.ipynb
 
 # protect private API KEYS
-api_keys.yaml
+api_key.yaml
 
 # Mac
 .DS_Store

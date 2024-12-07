@@ -4,20 +4,19 @@ import yaml
 import argparse 
 import modules
 
+from utils.utils_main import load_config
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--model_type', type=str, default='gpt-4o-mini')
     parser.add_argument('--resume_dir', type=str, default='./outputs/2024-11-03_story_container.json')
     parser.add_argument('--output_dir', type=str, default='./outputs')
+    parser.add_argument('--api_key', type=str, default=None)
     args = parser.parse_args()
 
-    # load configs
-    with open("./configs/configs.yaml") as f:
-        configs = yaml.load(f, Loader=yaml.FullLoader)
-    
-    with open("./configs/api_key.json") as f:
-        api_key = yaml.load(f, Loader=yaml.FullLoader)
-        configs["api_key"] = api_key
+    configs = load_config(args, config_path="./configs/configs.yaml", api_key_path="./configs/api_key.yaml")
+    if configs is None:
+        exit()
 
     if (args.resume_dir is not None) and (os.path.exists(args.resume_dir)):
         # resume story if given
