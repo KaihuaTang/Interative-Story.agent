@@ -5,8 +5,8 @@
 
 # Interative-Story.agent
 
-<div style="text-align: center;">
-    <img src="assets/icon_dalle.png" alt="Icon" style="width:50%;"/>
+<div align="center">
+    <img src="assets/icon_dalle.png" alt="logo" width="50%"  style="border-radius: 50%; padding-bottom: 20px"/>
 </div>
 
 
