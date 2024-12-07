@@ -1,0 +1,14 @@
+# compilation and distribution
+__pycache__
+_ext
+*.pyc
+*.so
+
+# ipython/jupyter notebooks
+#*.ipynb
+**/.ipynb_checkpoints/
+
+*.ipynb
+
+# Mac
+.DS_Store
