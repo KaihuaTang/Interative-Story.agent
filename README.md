@@ -3,5 +3,10 @@
 </p>
 
 # Interative-Story.agent
-<img src="assets/icon_dalle.png" alt="Icon" style="width:50%; display:block; margin:0 auto;" />
+
+<div style="text-align: center;">
+    <img src="assets/icon_dalle.png" alt="Icon" style="width:50%;"/>
+</div>
+
+
 This project aims to create a new storytelling experience by allowing users to interact with AI to shape the story's direction.
