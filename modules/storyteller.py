@@ -5,32 +5,32 @@ from datetime import datetime
 
 
 class Storyteller():
-    def __init__(self, args, configs, story_container=None):
+    def __init__(self, args, configs, save_path=None, story_container=None):
         self.args = args
         self.configs = configs
         self.model_type = args.model_type
 
+        # initialize save path
+        self.save_path = os.path.join(self.args.output_dir, f"{datetime.now().strftime("%Y%m%d_%Hh%Mm%Ss")}.json") if save_path is None else save_path
+
         # initialize story container
-        self.story_container = story_container
-        if self.story_container is None:
-            self.story_container = {}
+        self.story_container = {} if story_container is None else story_container
 
         # check whether the model is supported, if yes return api type
         if args.model_type in configs['MODEL2API']:
             self.api_type = configs['MODEL2API'][args.model_type]
         else:
-            raise ValueError("Wrong Model type")
+            raise ValueError(f"Model type is not supported {args.model_type}")
 
         # set client according to api type
         if self.api_type == 'openai':
-            self.client = OpenAI(api_key=configs["api_key"]['API_KEY'])
+            self.client = OpenAI(api_key=configs["api_key"])
         else:
-            raise ValueError(f"Wrong API type. API Type: {self.api_type}")
+            raise ValueError(f"API type is not supported: {self.api_type}")
         
 
     def update_container(self):
-        save_path = os.path.join(self.args.output_dir, f"{str(datetime.now().date())}_story_container.json")
-        with open(save_path, "w", encoding="utf-8") as json_file:
+        with open(self.save_path, "w", encoding="utf-8") as json_file:
             json.dump(self.story_container, json_file, ensure_ascii=False, indent=4)
 
 
@@ -49,62 +49,6 @@ class Storyteller():
             output_dict = None
         
         return output_dict
-
-
-    def generate_outline(self, user_hint):
-        prompt = self.configs["OUTLINE_PROMPT"].format(hint = user_hint)
-        outline, _ =  self.chat_with_storyteller(prompt)
-        if outline is not None:
-            self.story_container["outline"] = outline
-            self.update_container()
-        else:
-            print("Generate Story Outline Failed Once!")
-        return outline
-    
-
-    def generate_story_style(self, outline):
-        prompt = self.configs["STYLE_PROMPT"].format(outline = outline)
-        story_style, _ =  self.chat_with_storyteller(prompt)
-        if story_style is not None:
-            self.story_container["story_style"] = story_style
-            self.update_container()
-        else:
-            print("Generate Story Style Failed Once!")
-        return story_style
-
-
-    def generate_characters(self, outline, story_style):
-        prompt = self.configs["CHARACTER_PROMPT"].format(outline = outline, story_style = story_style)
-        
-        need_correct_characters = True
-        while(need_correct_characters):
-            characters, _ =  self.chat_with_storyteller(prompt)
-            characters = self.string_to_dictionary(characters)
-            if (characters is not None) and ("角色列表" in characters):
-                need_correct_characters = False
-            else:
-                print("Generate Characters Failed Once!")
-                
-        self.story_container["characters"] = characters["角色列表"]
-        self.update_container()
-        return characters
-
-
-    def generate_chapter_scripts(self, outline, story_style, characters):
-        prompt = self.configs["CHAPTER_PROMPT"].format(outline=outline, story_style=story_style, characters=characters) 
-        
-        need_correct_chapters = True
-        while(need_correct_chapters):
-            chapter_scripts, _ =  self.chat_with_storyteller(prompt)
-            chapter_scripts = self.string_to_dictionary(chapter_scripts)
-            if (chapter_scripts is not None) and ("章节大纲" in chapter_scripts):
-                need_correct_chapters = False
-            else:
-                print("Generate Chapter Scripts Failed Once!")
-
-        self.story_container["chapter_scripts"] = chapter_scripts["章节大纲"]
-        self.update_container()
-        return chapter_scripts
 
 
     def pepare_to_tell(self):

@@ -18,27 +18,25 @@ def load_config(args, config_path="./configs/configs.yaml", api_key_path="./conf
         success = False
     
     # load api key
-    if os.path.exists(api_key_path):
+    if args.api_key is not None:
+        # use input api key first, updated to api_key_path
+        api_key = {"API_KEY": args.api_key}
+        with open(api_key_path, "w") as f:
+            yaml.dump(api_key, f)   
+        configs["api_key"] = api_key["API_KEY"]
+    elif os.path.exists(api_key_path):
         with open(api_key_path) as f:
             api_key = yaml.load(f, Loader=yaml.FullLoader)
             if "API_KEY" in api_key:
-                configs["api_key"] = api_key
-            elif args.api_key is not None:
-                api_key = {"API_KEY": args.api_key}
-                with open(api_key_path, "w") as f:
-                    yaml.dump(api_key, f)
-                configs["api_key"] = api_key
+                configs["api_key"] = api_key["API_KEY"]
             else:
                 print("API_KEY is neither found in api_key.yaml nor in args --api_key")
                 os.remove(api_key_path)
                 success = False
-    elif args.api_key is not None:
-        api_key = {"API_KEY": args.api_key}
-        with open(api_key_path, "w") as f:
-            yaml.dump(api_key, f)   
-        configs["api_key"] = api_key
     else:    
         print("api_key.yaml is not found and --api_key is not given")
         success = False
 
     return configs if success else None
+
+

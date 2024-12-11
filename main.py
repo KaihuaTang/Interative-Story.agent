@@ -4,7 +4,8 @@ import yaml
 import argparse 
 import modules
 
-from utils.utils_main import load_config
+from utils.utils_main import *
+from modules.storymanager import *
 
 def main():
     parser = argparse.ArgumentParser()
@@ -19,45 +20,23 @@ def main():
     if configs is None:
         exit()
 
-    if (args.resume_dir is not None) and (os.path.exists(args.resume_dir)):
-        # resume story if given
-        story_container = json.load(open(args.resume_dir))
-        story_teller = modules.Storyteller(args, configs, story_container=story_container)
-    else:
-        # init a new story teller
-        story_teller = modules.Storyteller(args, configs)
+    # STEP 1: init or resume a story teller
+    story_teller = step_1_init_or_resume(args, configs)
 
-    # init a new story hint
-    if "story_hint" in story_teller.story_container:
-        user_hint = story_teller.story_container["story_hint"]
-    else:
-        user_hint = input("Enter some hint for the story you like: ")
-        story_teller.story_container["story_hint"] = user_hint
-        story_teller.update_container()
+    # STEP 2: get key words, a hint or other story prompt
+    user_hint = step_2_get_hint(story_teller)
 
-    # get outline
-    if "outline" not in story_teller.story_container:
-        outline = story_teller.generate_outline(user_hint=user_hint)
-        print("="*50)
-        print(f"Story Outline: {outline}")
+    # STEP 3: generate a story outline
+    outline = step_3_generate_outline(story_teller, user_hint)
 
-    # get story style
-    if "story_style" not in story_teller.story_container:
-        story_style = story_teller.generate_story_style(outline=outline)
-        print("="*50)
-        print(f"Story Style: {story_style}")
+    # STEP 4: get story style
+    story_style = step_4_generate_story_style(story_teller, outline)
 
-    # get characters
-    if "characters" not in story_teller.story_container:
-        characters = story_teller.generate_characters(outline=outline, story_style=story_style)
-        print("="*50)
-        print(f"Story Characters: {characters}")
+    # STEP 5: generate roles
+    characters = step_5_generate_characters(story_teller, outline, story_style)
 
-    # get chapter outlines
-    if "chapter_scripts" not in story_teller.story_container:
-        chapter_scripts = story_teller.generate_chapter_scripts(outline=outline, story_style=story_style, characters=characters)
-        print("="*50)
-        print(f"Chapter Scripts: {chapter_scripts}")
+    # STEP 6: generate chapter scripts
+    chapter_scripts = step_6_generate_chapter_scripts(story_teller, outline, story_style, characters)
 
     # prepare to tell
     story_teller.pepare_to_tell()
