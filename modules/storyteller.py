@@ -134,9 +134,9 @@ class Storyteller():
     def chat_with_openai_client(self, query, history, storytelling=False):
 
         if storytelling:
-            system_prompt = self.configs["STORYTELLING_SYSTEM_PROMPT"]
+            system_prompt = self.configs["SYSTEM_PROMPT_WRITE"]
         else:
-            system_prompt = self.configs["SYSTEM_PROMPT"]
+            system_prompt = self.configs["SYSTEM_PROMPT_TOOL"]
 
         # construct messages with history and system prompt
         if (history is not None) and (len(history) > 0):
